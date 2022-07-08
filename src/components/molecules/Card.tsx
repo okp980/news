@@ -2,7 +2,7 @@
 
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React from "react";
-import { Text } from "@rneui/base";
+import { Button, Text } from "@rneui/base";
 import { CardInterface } from "../../interface/interface";
 import { FONTS } from "../../globalStyles/globalStyles";
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
@@ -29,6 +29,10 @@ const Card: React.FC<CardInterface> = ({
 				<Text style={[FONTS.time]}>
 					{formatDistanceToNow(new Date(time), { addSuffix: true })}
 				</Text>
+				<View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+					<Button buttonStyle={{ marginRight: 10 }}>Edit</Button>
+					<Button buttonStyle={{ backgroundColor: "red" }}>Delete</Button>
+				</View>
 			</View>
 		</View>
 	);

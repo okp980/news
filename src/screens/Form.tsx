@@ -13,6 +13,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { Button, Card, Input } from "@rneui/base";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch, RootState } from "../store/store";
+import { AxiosError } from "axios";
 
 const Form = ({
 	navigation,
@@ -72,8 +73,10 @@ const Form = ({
 				},
 			});
 		} catch (error) {
-			setError(error.message);
-			console.log(error);
+			if (error instanceof AxiosError) {
+				setError(error.message);
+				console.log(error);
+			}
 		}
 	};
 	return (
