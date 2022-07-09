@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { Button, Text } from "@rneui/base";
 import { CardInterface } from "../../interface/interface";
@@ -8,6 +8,9 @@ import { format } from "date-fns";
 import { useNavigation, useNavigationState } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { TabsParamsList } from "../../types/types";
+import { useDispatch } from "react-redux";
+import { Dispatch } from "../../store/store";
+import { AxiosError } from "axios";
 
 const Card: React.FC<CardInterface> = ({
 	id,
@@ -17,6 +20,7 @@ const Card: React.FC<CardInterface> = ({
 	excerpt,
 	navigation,
 }) => {
+	const dispatch = useDispatch<Dispatch>();
 	const truncate = (str: string, num: number) => {
 		return str.length > num ? str.substring(0, num - 1) + "..." : str;
 	};
@@ -25,8 +29,6 @@ const Card: React.FC<CardInterface> = ({
 	console.log("route", route);
 
 	const handleNavigate = () => {
-		console.log(state);
-
 		navigation.navigate("Form", {
 			action: "edit",
 			newsId: id,
@@ -34,6 +36,30 @@ const Card: React.FC<CardInterface> = ({
 			title: route === "News" ? "news" : "comment",
 		});
 	};
+
+	const handleDelete = async () => {
+		try {
+			if (route === "News") {
+				// @ts-ignore
+				await dispatch.news.removeNewsAsync(id);
+			}
+
+			if (route === "SingleNews") {
+				await dispatch.comments.removeCommentAsync({
+					// @ts-ignore
+					newsId: id,
+					// @ts-ignore
+					commentId: id,
+				});
+			}
+			Alert.alert("Deleted Successfully");
+		} catch (error) {
+			if (error instanceof AxiosError) {
+				Alert.alert(error.message);
+			}
+		}
+	};
+
 	return (
 		<View style={styles.container}>
 			<View>
@@ -50,7 +76,12 @@ const Card: React.FC<CardInterface> = ({
 					<Button buttonStyle={{ marginRight: 10 }} onPress={handleNavigate}>
 						Edit
 					</Button>
-					<Button buttonStyle={{ backgroundColor: "red" }}>Delete</Button>
+					<Button
+						buttonStyle={{ backgroundColor: "red" }}
+						onPress={handleDelete}
+					>
+						Delete
+					</Button>
 				</View>
 			</View>
 		</View>

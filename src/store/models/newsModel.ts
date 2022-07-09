@@ -69,8 +69,8 @@ export const news = createModel<RootModel>()({
 			// @ts-ignore
 			dispatch.news.editNews(data);
 		},
-		async removeNewsAsync(payload: { id: string; news: INews }, rootState) {
-			const data = await deleteNews(payload.id, payload.news);
+		async removeNewsAsync(payload: string, rootState) {
+			const data = await deleteNews(payload);
 			// @ts-ignore
 			dispatch.news.removeNews(data);
 		},

@@ -34,10 +34,7 @@ export const updateNews = async (
 };
 
 // Delete news item
-export const deleteNews = async (
-	id: string,
-	news: INews
-): Promise<AxiosResponse<any>> => {
+export const deleteNews = async (id: string): Promise<AxiosResponse<any>> => {
 	const { data } = await Request.delete(`/news/${id}`);
 	return data;
 };
