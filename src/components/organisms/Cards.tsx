@@ -27,6 +27,8 @@ const Cards = () => {
 			onPress={() => navigation.push("SingleNews", { id: item.id })}
 		>
 			<Card
+				navigation={navigation}
+				id={item.id}
 				author={item.author}
 				time={item.createdAt}
 				title={item.title}

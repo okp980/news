@@ -1,11 +1,12 @@
 import {
+	ActivityIndicator,
 	KeyboardAvoidingView,
 	ScrollView,
 	StyleSheet,
 	Text,
 	View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { NewsNavProps, NewsParamsList, TabsParamsList } from "../types/types";
 import { RouteProp } from "@react-navigation/native";
@@ -14,6 +15,7 @@ import { Button, Card, Input } from "@rneui/base";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch, RootState } from "../store/store";
 import { AxiosError } from "axios";
+import { Center } from "../components";
 
 const Form = ({
 	navigation,
@@ -32,6 +34,38 @@ const Form = ({
 	const successComment = useSelector(
 		(state: RootState) => state.loading.effects.comments.addCommentAsync.success
 	);
+	const successEditNews = useSelector(
+		(state: RootState) => state.loading.effects.news.editNewsAsync.success
+	);
+
+	const loadingStateSingleNews = useSelector(
+		(state: RootState) => state.loading.effects.news.loadSingleNewsAsync.loading
+	);
+	const loadingStateSingleNewsSubmit = useSelector(
+		(state: RootState) => state.loading.effects.news.editNewsAsync.loading
+	);
+	const singleNews = useSelector((state: RootState) => state.news.singleNews);
+	useEffect(() => {
+		const loadField = async function () {
+			try {
+				// @ts-ignore
+				await dispatch.news.loadSingleNewsAsync(route.params.newsId);
+				// @ts-ignore
+				setTitle(singleNews?.title);
+				// @ts-ignore
+				setMessage(singleNews?.body);
+			} catch (error) {
+				if (error instanceof AxiosError) {
+					setError(error.message);
+				}
+			}
+		};
+		if (route?.params?.type === "news" && route?.params?.action === "edit") {
+			loadField();
+		}
+		console.log(route.params.newsId);
+	}, [route.params.newsId]);
+
 	const getTitle = () => {
 		let title;
 		if (route.params && route.params.type && route.params.action) {
@@ -61,17 +95,40 @@ const Form = ({
 		console.log(route.params.newsId);
 
 		try {
-			await dispatch.comments.addCommentAsync({
-				// @ts-ignore
-				id: route.params.newsId,
-				comment: {
-					name: title,
-					comment: message,
-					avatar: "http://lorempixel.com/640/480/fashion",
-					// @ts-ignore
-					newsId: route.params.newsId,
-				},
-			});
+			switch (route.params.type) {
+				case "comment":
+					if (route.params.action === "create") {
+						await dispatch.comments.addCommentAsync({
+							// @ts-ignore
+							id: route.params.newsId,
+							comment: {
+								name: title,
+								comment: message,
+								avatar: "http://lorempixel.com/640/480/fashion",
+								// @ts-ignore
+								newsId: route.params.newsId,
+							},
+						});
+					} else {
+					}
+					break;
+				case "news":
+					if (route.params.action === "edit") {
+						await dispatch.news.editNewsAsync({
+							// @ts-ignore
+							id: route.params.newsId,
+							news: {
+								author: title,
+								title: message,
+							},
+						});
+					} else {
+					}
+					break;
+
+				default:
+					break;
+			}
 		} catch (error) {
 			if (error instanceof AxiosError) {
 				setError(error.message);
@@ -79,6 +136,14 @@ const Form = ({
 			}
 		}
 	};
+
+	if (loadingStateSingleNews) {
+		return (
+			<Center>
+				<ActivityIndicator size="large" />
+			</Center>
+		);
+	}
 	return (
 		<ScrollView>
 			<KeyboardAvoidingView behavior="height">
@@ -111,7 +176,10 @@ const Form = ({
 						>
 							Go Back
 						</Button>
-						<Button loading={commentLoading} onPress={handleSubmit}>
+						<Button
+							loading={commentLoading || loadingStateSingleNewsSubmit}
+							onPress={handleSubmit}
+						>
 							Submit
 						</Button>
 					</View>
@@ -123,7 +191,7 @@ const Form = ({
 						</Text>
 					</Card>
 				)}
-				{successComment && (
+				{(successComment || successEditNews) && (
 					<Card>
 						<Text style={{ textAlign: "center", color: "green" }}>
 							Added Succefully

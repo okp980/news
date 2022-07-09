@@ -32,6 +32,7 @@ export interface CardInterface {
 	time: string;
 	id?: string;
 	excerpt: string;
+	navigation: any;
 }
 
 export interface IServerImage {
