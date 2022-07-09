@@ -1,5 +1,6 @@
 import {
 	ActivityIndicator,
+	Alert,
 	KeyboardAvoidingView,
 	ScrollView,
 	StyleSheet,
@@ -23,19 +24,9 @@ const Form = ({
 }: BottomTabScreenProps<TabsParamsList, "Form">) => {
 	const [title, setTitle] = useState("");
 	const [message, setMessage] = useState("");
-	const [error, setError] = useState("");
 	const dispatch = useDispatch<Dispatch>();
 	const commentLoading = useSelector(
 		(state: RootState) => state.loading.effects.comments.addCommentAsync.loading
-	);
-	const errorComment = useSelector(
-		(state: RootState) => state.loading.effects.comments.addCommentAsync.error
-	);
-	const successComment = useSelector(
-		(state: RootState) => state.loading.effects.comments.addCommentAsync.success
-	);
-	const successEditNews = useSelector(
-		(state: RootState) => state.loading.effects.news.editNewsAsync.success
 	);
 
 	const loadingStateSingleNews = useSelector(
@@ -56,15 +47,14 @@ const Form = ({
 				setMessage(singleNews?.body);
 			} catch (error) {
 				if (error instanceof AxiosError) {
-					setError(error.message);
+					alert(error.message);
 				}
 			}
 		};
 		if (route?.params?.type === "news" && route?.params?.action === "edit") {
 			loadField();
 		}
-		console.log(route.params.newsId);
-	}, [route.params.newsId]);
+	}, [route?.params?.newsId]);
 
 	const getTitle = () => {
 		let title;
@@ -89,7 +79,7 @@ const Form = ({
 	};
 	const handleSubmit = async () => {
 		if (!title || !message) {
-			alert("none");
+			alert("Please make sure no field is empty");
 			return;
 		}
 		console.log(route.params.newsId);
@@ -109,6 +99,7 @@ const Form = ({
 								newsId: route.params.newsId,
 							},
 						});
+						Alert.alert("Comments Successfully Added");
 					} else {
 					}
 					break;
@@ -122,6 +113,8 @@ const Form = ({
 								title: message,
 							},
 						});
+						Alert.alert("Updated Successfully");
+						navigation.goBack();
 					} else {
 					}
 					break;
@@ -131,7 +124,7 @@ const Form = ({
 			}
 		} catch (error) {
 			if (error instanceof AxiosError) {
-				setError(error.message);
+				alert(error.message);
 				console.log(error);
 			}
 		}
@@ -184,20 +177,7 @@ const Form = ({
 						</Button>
 					</View>
 				</Card>
-				{errorComment && (
-					<Card>
-						<Text style={{ textAlign: "center", color: "red" }}>
-							{error || "Server Error"}
-						</Text>
-					</Card>
-				)}
-				{(successComment || successEditNews) && (
-					<Card>
-						<Text style={{ textAlign: "center", color: "green" }}>
-							Added Succefully
-						</Text>
-					</Card>
-				)}
+
 				<View style={{ marginBottom: 50 }} />
 			</KeyboardAvoidingView>
 		</ScrollView>

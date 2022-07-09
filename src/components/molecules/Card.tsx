@@ -5,7 +5,7 @@ import { CardInterface } from "../../interface/interface";
 import { FONTS } from "../../globalStyles/globalStyles";
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
 import { format } from "date-fns";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useNavigationState } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { TabsParamsList } from "../../types/types";
 
@@ -17,18 +17,21 @@ const Card: React.FC<CardInterface> = ({
 	excerpt,
 	navigation,
 }) => {
-	// const { navigation } =
-	// 	useNavigation<BottomTabScreenProps<TabsParamsList, "Form">>();
 	const truncate = (str: string, num: number) => {
 		return str.length > num ? str.substring(0, num - 1) + "..." : str;
 	};
+	const state = useNavigationState((state) => state);
+	const route = state.routeNames[state.routeNames.length - 2];
+	console.log("route", route);
 
 	const handleNavigate = () => {
+		console.log(state);
+
 		navigation.navigate("Form", {
 			action: "edit",
 			newsId: id,
-			type: "news",
-			title: "news",
+			type: route === "News" ? "news" : "comment",
+			title: route === "News" ? "news" : "comment",
 		});
 	};
 	return (
