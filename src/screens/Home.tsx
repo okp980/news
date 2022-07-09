@@ -24,13 +24,15 @@ const Home = ({ navigation, route }: NewsNavProps<"News">) => {
 	const isDarkMode = useColorScheme() === "dark";
 	const dispatch = useDispatch<Dispatch>();
 	const news = useSelector((state: RootState) => state.news.news);
-	const loadingState = useSelector((state: RootState) => state.loading);
+	const loadingState = useSelector(
+		(state: RootState) => state.loading.effects.news.loadAsync.loading
+	);
 	const [page, setPage] = useState(1);
 
 	useEffect(() => {
 		dispatch.news.loadAsync(page.toString());
 	}, [page]);
-	if (loadingState.models.news.loading) {
+	if (loadingState) {
 		return (
 			<Center>
 				<ActivityIndicator size="large" />

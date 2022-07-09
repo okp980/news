@@ -8,8 +8,8 @@ import { format } from "date-fns";
 import { useNavigation, useNavigationState } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { TabsParamsList } from "../../types/types";
-import { useDispatch } from "react-redux";
-import { Dispatch } from "../../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { Dispatch, RootState } from "../../store/store";
 import { AxiosError } from "axios";
 
 const Card: React.FC<CardInterface> = ({
@@ -21,6 +21,9 @@ const Card: React.FC<CardInterface> = ({
 	navigation,
 }) => {
 	const dispatch = useDispatch<Dispatch>();
+	const loading = useSelector(
+		(state: RootState) => state.loading.effects.news.removeNewsAsync.loading
+	);
 	const truncate = (str: string, num: number) => {
 		return str.length > num ? str.substring(0, num - 1) + "..." : str;
 	};
@@ -79,6 +82,7 @@ const Card: React.FC<CardInterface> = ({
 					<Button
 						buttonStyle={{ backgroundColor: "red" }}
 						onPress={handleDelete}
+						loading={loading}
 					>
 						Delete
 					</Button>

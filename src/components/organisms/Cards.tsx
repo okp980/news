@@ -17,6 +17,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 const Cards = () => {
 	const news = useSelector((state: RootState) => state.news.news);
+
 	const navigation =
 		useNavigation<
 			NativeStackNavigationProp<NewsParamsList, "News", undefined>

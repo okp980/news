@@ -24,8 +24,10 @@ import { IServerNews } from "../interface/interface";
 
 const SingleNews = ({ navigation, route }: NewsNavProps<"SingleNews">) => {
 	const dispatch = useDispatch<Dispatch>();
-	// get list of news from store
+	// get single news from store
 	const news = useSelector((state: RootState) => state.news.singleNews);
+
+	const comments = useSelector((state: RootState) => state.comments.comments);
 
 	// get list of images in a news from store
 	const images = useSelector((state: RootState) => state.images.images);
@@ -150,17 +152,25 @@ const SingleNews = ({ navigation, route }: NewsNavProps<"SingleNews">) => {
 				</Button>
 				<Card.Title>Comments</Card.Title>
 
-				{news?.data?.map((nw: IServerNews, index: number) => (
-					<Card key={index} s>
-						<CommentCard
-							author={nw.author}
-							title={nw.title}
-							time={nw.createdAt}
-							id={nw.id}
-							excerpt={nw.body}
-						/>
-					</Card>
-				))}
+				{comments.length === 0 ? (
+					<View style={{ height: 100 }}>
+						<Center>
+							<Text>No Comments Under This Post</Text>
+						</Center>
+					</View>
+				) : (
+					comments?.map((nw: IServerNews, index: number) => (
+						<Card key={index} s>
+							<CommentCard
+								author={nw.author}
+								title={nw.title}
+								time={nw.createdAt}
+								id={nw.id}
+								excerpt={nw.body}
+							/>
+						</Card>
+					))
+				)}
 			</Card>
 		</ScrollView>
 	);
